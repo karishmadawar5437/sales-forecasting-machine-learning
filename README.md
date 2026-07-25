@@ -1,5 +1,10 @@
 # 📊 Sales Forecasting Using Machine Learning
 
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-red)
+![Machine Learning](https://img.shields.io/badge/Machine-Learning-green)
+![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-ML-orange)
+
 ## 📌 Project Overview
 
 This project focuses on predicting future sales using Machine Learning techniques. Historical sales data is analyzed through data preprocessing, exploratory data analysis (EDA), feature engineering, model training, and evaluation. The trained model is then used to forecast future sales, and the results are presented through an interactive Streamlit dashboard.
