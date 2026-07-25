@@ -173,7 +173,7 @@ The Streamlit dashboard includes:
 
 ## Forecast Table
 
-![Forecast Table](images/forecast_table.png)
+![Forecast Table](images/forecast_tables.png)
 
 Example:
 
