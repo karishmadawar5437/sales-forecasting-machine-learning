@@ -192,7 +192,7 @@ images/
 ### 1. Clone the repository
 
 ```bash
-git clone <repository-link>
+git clone <https://github.com/karishmadawar5437/sales-forecasting-machine-learning.git>
 ```
 
 ### 2. Install dependencies
