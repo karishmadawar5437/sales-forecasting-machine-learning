@@ -11,6 +11,14 @@ This project focuses on predicting future sales using Machine Learning technique
 
 ---
 
+## 🌐 Live Demo
+
+Try the application here:
+
+**🔗 https://sales-forecasting-machine-learning-i8hb27uiczjsq3cjuq5fcy.streamlit.app/
+
+---
+
 ## 🎯 Objectives
 
 - Analyze historical sales data.
