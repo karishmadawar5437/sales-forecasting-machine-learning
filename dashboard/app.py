@@ -5,6 +5,11 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from style import load_css
+
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # ==========================================================
 # PAGE CONFIGURATION
@@ -16,64 +21,151 @@ st.set_page_config(
     layout="wide"
 )
 
-# ==========================================================
-# TITLE
-# ==========================================================
+load_css()
 
-st.title("📊 Sales Forecast Dashboard")
+st.markdown("""
+<div class="hero">
 
-st.markdown(
-"""
-### AI & Data Science Project
+<div class="hero-title">
+🚀 SalesVision 
+</div>
 
-Interactive dashboard for Historical Sales Analysis and
-30-Day Sales Forecasting.
-"""
-)
+<div class="hero-subtitle">
+ Sales Forecasting Platform
+</div>
 
-st.markdown("---")
+<div class="hero-desc">
+Predict • Analyze • Forecast • Optimize
+</div>
+
+<br>
+
+<div style="display:flex;
+justify-content:center;
+gap:12px;
+flex-wrap:wrap;">
+
+<span style="
+background:#2563EB;
+color:white;
+padding:8px 18px;
+border-radius:25px;
+font-size:14px;
+font-weight:600;">
+🤖 Random Forest
+</span>
+
+<span style="
+background:#16A34A;
+color:white;
+padding:8px 18px;
+border-radius:25px;
+font-size:14px;
+font-weight:600;">
+📊 Interactive Dashboard
+</span>
+
+<span style="
+background:#EA580C;
+color:white;
+padding:8px 18px;
+border-radius:25px;
+font-size:14px;
+font-weight:600;">
+📅 {selected_days}-Day Forecast
+</span>
+
+</div>
+
+</div>
+""", unsafe_allow_html=True)
 
 # ==========================================================
 # LOAD DATA
 # ==========================================================
 
 daily_sales = pd.read_excel(
-    "data/processed/daily_sales.xlsx"
+    os.path.join(BASE_DIR, "data", "processed", "daily_sales.xlsx")
 )
 
 future_sales = pd.read_excel(
-    "data/processed/future_sales_forecast.xlsx"
+     os.path.join(BASE_DIR, "data", "processed","future_sales_forecast.xlsx")
+)
+
+future_sales["Order Date"] = pd.to_datetime(
+    future_sales["Order Date"]
 )
 
 # ==========================================================
 # SIDEBAR
 # ==========================================================
 
-st.sidebar.title("📊 Dashboard")
+st.sidebar.title("🚀 SalesVision ")
+
+st.sidebar.caption("Business Intelligence Platform")
 
 st.sidebar.markdown("---")
 
-st.sidebar.subheader("Project")
+st.sidebar.subheader("⚙ Dashboard Settings")
 
-st.sidebar.write("Sales Forecasting")
+forecast_days = st.sidebar.selectbox(
+    "Forecast Horizon",
+    ["7 Days", "15 Days", "30 Days"],
+    index=2
+)
 
-st.sidebar.subheader("Developer")
+# Convert selection into number of days
+forecast_mapping = {
+    "7 Days": 7,
+    "15 Days": 15,
+    "30 Days": 30
+}
 
-st.sidebar.write("Karishma")
+selected_days = forecast_mapping[forecast_days]
 
-st.sidebar.subheader("Course")
+st.sidebar.subheader("🤖 Machine Learning Model")
 
-st.sidebar.write("B.Tech AI & Data Science")
+st.sidebar.markdown("""
+<div style="
+background:white;
+padding:15px;
+border-radius:12px;
+box-shadow:0 3px 10px rgba(0,0,0,.08);
+border-left:5px solid #2563EB;
+">
+
+<b>Random Forest Regressor</b><br><br>
+
+🌳 Estimator: Random Forest<br>
+📈 Type: Regression<br>
+⚡ Status: Production Ready
+
+</div>
+""", unsafe_allow_html=True)
 
 st.sidebar.markdown("---")
 
-st.sidebar.subheader("Dataset")
+st.sidebar.subheader("📌 Dashboard Modules")
 
-st.sidebar.write(f"Historical Records : {len(daily_sales)}")
-
-st.sidebar.write(f"Forecast Records : {len(future_sales)}")
+st.sidebar.write("✅ Historical Analysis")
+st.sidebar.write("✅ Sales Forecast")
+st.sidebar.write("✅ Business Insights")
+st.sidebar.write("✅ Download Forecast")
 
 st.sidebar.markdown("---")
+
+st.sidebar.info("""
+**Developer**
+
+Karishma Dawar
+
+B.Tech AI & Data Science
+""")
+# ==========================================================
+# FILTER FORECAST DATA
+# ==========================================================
+
+future_sales = future_sales.head(selected_days)
 
 # ==========================================================
 # KPI CALCULATIONS
@@ -96,32 +188,105 @@ col1, col2, col3, col4 = st.columns(4)
 with col1:
 
     st.metric(
-        "💰 Historical Sales",
-        f"₹ {total_historical_sales:,.2f}"
+        "💰 Total Historical Sales",
+        f"₹ {total_historical_sales:,.0f}"
     )
 
 with col2:
 
     st.metric(
-        "📈 Forecast Sales",
-        f"₹ {total_forecast_sales:,.2f}"
+        "🔮 Predicted Sales",
+        f"₹ {total_forecast_sales:,.0f}"
     )
 
 with col3:
 
     st.metric(
-        "📊 Average Forecast",
-        f"₹ {average_forecast:,.2f}"
+        "📊 Average Daily Forecast",
+        f"₹ {average_forecast:,.0f}"
     )
 
 with col4:
 
     st.metric(
-        "🚀 Highest Forecast",
-        f"₹ {maximum_forecast:,.2f}"
+        "🚀 Peak Forecast",
+        f"₹ {maximum_forecast:,.0f}"
     )
 
 st.markdown("---")
+
+# ==========================================================
+# EXECUTIVE SUMMARY
+# ==========================================================
+
+st.markdown("### 📊 Executive Summary")
+
+growth = (
+    (total_forecast_sales / total_historical_sales) * 100
+)
+
+peak_date = future_sales.loc[
+    future_sales["Forecasted Sales"].idxmax(),
+    "Order Date"
+]
+
+highest_day = daily_sales.loc[
+    daily_sales["Sales"].idxmax(),
+    "index"
+]
+
+summary1, summary2 = st.columns(2)
+
+with summary1:
+
+    st.success(f"""
+### 📈 Historical Performance
+
+**Total Historical Sales**
+
+₹ {total_historical_sales:,.0f}
+
+**Highest Sales Day**
+
+{pd.to_datetime(highest_day).strftime("%d %b %Y")}
+
+**Average Daily Sales**
+
+₹ {daily_sales['Sales'].mean():,.0f}
+""")
+
+with summary2:
+
+    st.info(f"""
+### 🔮 Forecast Insights
+
+**30-Day Forecast**
+
+₹ {total_forecast_sales:,.0f}
+
+**Peak Forecast Date**
+
+{peak_date.strftime("%d %b %Y")}
+
+**Peak Forecast**
+
+₹ {maximum_forecast:,.0f}
+""")
+
+st.warning(f"""
+### 💼 Business Recommendation
+
+• Maintain sufficient inventory for the upcoming demand.
+
+• Prepare additional stock before **{peak_date.strftime("%d %b %Y")}**.
+
+• The forecasted sales represent **{growth:.1f}%** of the historical sales dataset.
+
+• Continue monitoring sales trends to optimize inventory planning and promotional campaigns.
+""")
+
+st.markdown("---")
+
 # ==========================================================
 # HISTORICAL SALES TREND
 # ==========================================================
@@ -138,7 +303,7 @@ fig_history = px.line(
 
 fig_history.update_layout(
     template="plotly_white",
-    height=450,
+    height=400,
     title_x=0.35,
     xaxis_title="Date",
     yaxis_title="Sales"
@@ -152,19 +317,19 @@ st.plotly_chart(fig_history, use_container_width="stretch")
 
 st.markdown("---")
 
-st.subheader("🔮 30-Day Sales Forecast")
+st.subheader(f"🔮 {selected_days}-Day Sales Forecast")
 
 fig_forecast = px.line(
     future_sales,
     x="Order Date",
     y="Forecasted Sales",
     markers=True,
-    title="Future Sales Forecast"
+    title=f"{selected_days}-Day Sales Forecast"
 )
 
 fig_forecast.update_layout(
     template="plotly_white",
-    height=450,
+    height=400,
     title_x=0.35,
     xaxis_title="Date",
     yaxis_title="Forecast Sales"
@@ -217,7 +382,7 @@ fig_combined = px.line(
 
 fig_combined.update_layout(
     template="plotly_white",
-    height=550,
+    height=450,
     title_x=0.35,
     xaxis_title="Date",
     yaxis_title="Sales"
@@ -273,7 +438,7 @@ fig_hist = px.histogram(
 
 fig_hist.update_layout(
     template="plotly_white",
-    height=450
+    height=400
 )
 
 st.plotly_chart(fig_hist, use_container_width="stretch")
@@ -283,7 +448,7 @@ st.plotly_chart(fig_hist, use_container_width="stretch")
 
 st.markdown("---")
 
-st.subheader("📋 30-Day Forecast Table")
+st.subheader(f"📋 {selected_days}-Day Forecast Table")
 
 st.dataframe(
     future_sales,
